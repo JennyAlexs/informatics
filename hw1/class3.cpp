@@ -36,31 +36,31 @@ class myclass{
 		
         myclass(myclass&& Object) noexcept {
             LogDuration ld("move");
-            a = std::move(Object.arr);
-            s = std::move(Object.size);
-            v = std::move(Object.vect);
+            a = std::move(Object.a);
+            s = std::move(Object.s);
+            v = std::move(Object.v);
         };
 
         myclass& operator=(const myclass&& object){
             LogDuration ld("move operator:");
-            a = std::move(Object.arr);
-            s = std::move(Object.size);
-            v = std::move(Object.vect);
+            a = std::move(Object.a);
+            s = std::move(Object.s);
+            v = std::move(Object.v);
             return *this;
         };
 
          myclass(const myclass &object){
             LogDuration ld("copy:");
-            s = std::copy(object.size);
-            a = std::copy(object.arr);
-            v = std::copy(object.vect);
+            s = std::copy(object.s);
+            a = std::copy(object.a);
+            v = std::copy(object.v);
         };
 
         myclass operator=(const myclass& object){
             LogDuration ld("copy operator:");
-            s = std::copy(object.size);
-            a = std::copy(object.arr);
-            v = std::copy(object.vect);
+            s = std::copy(object.s);
+            a = std::copy(object.a);
+            v = std::copy(object.v);
             return *this;
         };
 
