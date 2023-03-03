@@ -32,7 +32,7 @@ class myclass{
         std::vector v;
 
         myclass() = default;
-	  ~myclass() = default;
+	~myclass() = default;
 		
         myclass(myclass&& Object) noexcept {
             LogDuration ld("move");
