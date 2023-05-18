@@ -56,8 +56,8 @@ public:
     }
 };
 
-template<typename T, unsigned m_rows, unsigned m_cols, unsigned m_rows_other, unsigned m_cols_other>
-Matrix<T, m_rows, m_cols> operator+(const Matrix<T, m_rows, m_cols> self, const Matrix<T, m_rows_other, m_cols_other>& other)
+template<typename T, unsigned m_rows, unsigned m_cols>
+Matrix<T, m_rows, m_cols> operator+(const Matrix<T, m_rows, m_cols> self, const Matrix<T, m_rows, m_cols>& other)
 {
     Matrix<T, m_rows, m_cols> result;
     for (size_t i = 0; i < m_rows; ++i)
@@ -66,8 +66,8 @@ Matrix<T, m_rows, m_cols> operator+(const Matrix<T, m_rows, m_cols> self, const 
     return result;
 }
 
-template<typename T, unsigned m_rows, unsigned m_cols, unsigned m_rows_other, unsigned m_cols_other>
-Matrix<T, m_rows, m_cols> operator-(const Matrix<T, m_rows, m_cols> self, const Matrix<T, m_rows_other, m_cols_other>& other)
+template<typename T, unsigned m_rows, unsigned m_cols>
+Matrix<T, m_rows, m_cols> operator-(const Matrix<T, m_rows, m_cols> self, const Matrix<T, m_rows, m_cols>& other)
 {
     Matrix<T, m_rows, m_cols> result;
     for (size_t i = 0; i < m_rows; ++i)
