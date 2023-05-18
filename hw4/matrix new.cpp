@@ -2,32 +2,28 @@
 #include <vector>
 #include <memory>
 
-template <typename T, size_t Rows, size_t Cols>
+template<typename T, unsigned m_rows, unsigned m_cols>
 class Matrix {
 private:
-    std::vector<T> m_data;
+    std::unique_ptr<std::vector<T>> m_data;
 
 public:
-    Matrix() : m_data(Rows * Cols) {}
- Matrix(const std::initializer_list<std::initializer_list<T>>& values) : Matrix() {
-        size_t i = 0;
-        for (auto& row : values) {
-            size_t j = 0;
-            for (auto& value : row) {
-                (*this)(i, j) = value;
-                ++j;
-            }
-            ++i;
-        }
+
+    Matrix(){
+        m_data = std::unique_ptr<std::vector<T>>(new std::vector<T>(m_rows * m_cols));
     }
 
-    Matrix(const Matrix& other) : m_data(other.m_data) {}
+    Matrix(const Matrix& other){
+        m_data = std::unique_ptr<std::vector<T>>(new std::vector<T>(*other.m_data));
+    }
 
-    Matrix(Matrix&& other) : m_data(std::move(other.m_data)) {}
+    Matrix(Matrix&& other){
+        m_data = std::move(other.m_data);
+    }
 
     Matrix& operator=(const Matrix& other) {
         if (this != &other) {
-            m_data = other.m_data;
+            m_data = std::unique_ptr<std::vector<T>>(new std::vector<T>(*other.m_data));
         }
         return *this;
     }
@@ -39,76 +35,90 @@ public:
         return *this;
     }
 
-    Matrix operator+(const Matrix& other) const
-    {
-        if (Rows != other.Rows || Cols != other.Cols)
-            throw std::runtime_error("Matrix dimensions do not match");
-        Matrix<T, Rows, Cols> result;
-        for (size_t i = 0; i < Rows; ++i)
-            for (size_t j = 0; j < Cols; ++j)
-                result(i, j) = (*this)(i, j) + other(i, j);
-        return result;
-    }
-
-    Matrix operator-(const Matrix& other) const
-    {
-        if (Rows != other.Rows || Cols != other.Cols)
-            throw std::runtime_error("Matrix dimensions do not match");
-        Matrix<T, Rows, Cols> result;
-        for (size_t i = 0; i < Rows; ++i)
-            for (size_t j = 0; j < Cols; ++j)
-                result(i, j) = (*this)(i, j) - other(i, j);
-        return result;
-    }
-    template <size_t otherCols>
-    Matrix<T, Rows, otherCols> operator*(const Matrix<T, Cols, otherCols>& other) const
-    {
-        Matrix<T, Rows, otherCols> result;
-        for (size_t i = 0; i < Rows; ++i)
-            for (size_t j = 0; j < otherCols; ++j)
-                for (size_t k = 0; k < Cols; ++k)
-                    result(i, j) += (*this)(i, k) * other(k, j);
-        return result;
-    }
-
     T& operator()(size_t i, size_t j)
     {
-        return m_data[i * Cols + j];
+        return (*m_data)[i * m_cols + j];
     }
 
     const T& operator()(size_t i, size_t j) const
     {
-        return m_data[i * Cols + j];
+        return (*m_data)[i * m_cols + j];
     }
 
     size_t rows() const
     {
-        return Rows;
+        return m_rows;
     }
 
     size_t cols() const
     {
-        return Cols;
+        return m_cols;
     }
 };
 
-template <typename T, size_t Rows, size_t Cols>
-Matrix<T, Cols, Rows> transpose(Matrix<T, Rows, Cols>&& matrix)
+template<typename T, unsigned m_rows, unsigned m_cols, unsigned m_rows_other, unsigned m_cols_other>
+Matrix<T, m_rows, m_cols> operator+(const Matrix<T, m_rows, m_cols> self, const Matrix<T, m_rows_other, m_cols_other>& other)
 {
-    Matrix<T, Cols, Rows> result;
-    for (size_t i = 0; i < Rows; ++i)
-        for (size_t j = 0; j < Cols; ++j)
+    if (m_rows != m_rows_other || m_cols != m_cols_other)
+        throw std::runtime_error("Matrix dimensions do not match");
+    Matrix<T, m_rows, m_cols> result;
+    for (size_t i = 0; i < m_rows; ++i)
+        for (size_t j = 0; j < m_cols; ++j)
+            result(i, j) = self(i, j) + other(i, j);
+    return result;
+}
+
+template<typename T, unsigned m_rows, unsigned m_cols, unsigned m_rows_other, unsigned m_cols_other>
+Matrix<T, m_rows, m_cols> operator-(const Matrix<T, m_rows, m_cols> self, const Matrix<T, m_rows_other, m_cols_other>& other)
+{
+    if (m_rows != m_rows_other || m_cols != m_cols_other)
+        throw std::runtime_error("Matrix dimensions do not match");
+    Matrix<T, m_rows, m_cols> result;
+    for (size_t i = 0; i < m_rows; ++i)
+        for (size_t j = 0; j < m_cols; ++j)
+            result(i, j) = self(i, j) - other(i, j);
+    return result;
+}
+
+template<typename T, unsigned m_rows, unsigned m_cols, unsigned m_rows_other, unsigned m_cols_other>
+Matrix<T, m_rows, m_cols_other> operator*(const Matrix<T, m_rows, m_cols> self, const Matrix<T, m_rows_other, m_cols_other>& other)
+{
+    if (m_cols != m_rows_other)
+        throw std::runtime_error("Matrix dimensions do not match");
+    Matrix<T, m_rows, m_cols_other> result;
+    for (size_t i = 0; i < m_rows; ++i)
+        for (size_t j = 0; j < m_cols_other; ++j)
+            for (size_t k = 0; k < m_cols; ++k)
+                result(i, j) += self(i, k) * other(k, j);
+    return result;
+}
+
+    
+
+
+template<typename T, unsigned m_rows, unsigned m_cols>
+Matrix<T, m_cols, m_rows> transpose(Matrix<T, m_rows, m_cols>&& matrix)
+{
+    Matrix<T, m_cols, m_rows> result;
+    for (size_t i = 0; i < m_rows; ++i)
+        for (size_t j = 0; j < m_cols; ++j)
             result(j, i) = matrix(i, j);
     return result;
 }
 
 int main()
 {
-    Matrix<int, 2, 3> A{ {1, 2, 3}, {4, 5, 6} };
-    Matrix<int, 3, 2> B{ {7, 8}, {9, 10}, {11, 12} };
+    Matrix<int, 2, 3> A;
+    A(0, 0) = 1; A(0, 1) = 2; A(0, 2) = 3;
+    A(1, 0) = 4; A(1, 1) = 5; A(1, 2) = 6;
+
+    Matrix<int, 3, 2> B;
+    B(0, 0) = 7; B(0, 1) = 8;
+    B(1, 0) = 9; B(1, 1) = 10;
+    B(2, 0) = 11; B(2, 1) = 12;
 
     Matrix<int, 2, 2> C = A * B;
-    Matrix<int, 3, 2> D = transpose(std::move(A));
+    Matrix<int, 3, 2> D = transpose(std::move(A)); // используем move-семантику для передачи матрицы по универсальной ссылке
 
     std::cout << "Matrix A:\n";
     for (size_t i = 0; i < A.rows(); ++i)
