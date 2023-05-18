@@ -59,8 +59,6 @@ public:
 template<typename T, unsigned m_rows, unsigned m_cols, unsigned m_rows_other, unsigned m_cols_other>
 Matrix<T, m_rows, m_cols> operator+(const Matrix<T, m_rows, m_cols> self, const Matrix<T, m_rows_other, m_cols_other>& other)
 {
-    if (m_rows != m_rows_other || m_cols != m_cols_other)
-        throw std::runtime_error("Matrix dimensions do not match");
     Matrix<T, m_rows, m_cols> result;
     for (size_t i = 0; i < m_rows; ++i)
         for (size_t j = 0; j < m_cols; ++j)
@@ -71,8 +69,6 @@ Matrix<T, m_rows, m_cols> operator+(const Matrix<T, m_rows, m_cols> self, const 
 template<typename T, unsigned m_rows, unsigned m_cols, unsigned m_rows_other, unsigned m_cols_other>
 Matrix<T, m_rows, m_cols> operator-(const Matrix<T, m_rows, m_cols> self, const Matrix<T, m_rows_other, m_cols_other>& other)
 {
-    if (m_rows != m_rows_other || m_cols != m_cols_other)
-        throw std::runtime_error("Matrix dimensions do not match");
     Matrix<T, m_rows, m_cols> result;
     for (size_t i = 0; i < m_rows; ++i)
         for (size_t j = 0; j < m_cols; ++j)
@@ -83,8 +79,6 @@ Matrix<T, m_rows, m_cols> operator-(const Matrix<T, m_rows, m_cols> self, const 
 template<typename T, unsigned m_rows, unsigned m_cols, unsigned m_rows_other, unsigned m_cols_other>
 Matrix<T, m_rows, m_cols_other> operator*(const Matrix<T, m_rows, m_cols> self, const Matrix<T, m_rows_other, m_cols_other>& other)
 {
-    if (m_cols != m_rows_other)
-        throw std::runtime_error("Matrix dimensions do not match");
     Matrix<T, m_rows, m_cols_other> result;
     for (size_t i = 0; i < m_rows; ++i)
         for (size_t j = 0; j < m_cols_other; ++j)
