@@ -2,34 +2,45 @@
 #include <vector>
 #include <memory>
 
-template <typename T>
-class Matrix
-{
+template<typename T>
+class Matrix {
 private:
     size_t m_rows;
     size_t m_cols;
     std::unique_ptr<std::vector<T>> m_data;
-public:
-    Matrix() : m_rows(0), m_cols(0) {}
-    Matrix(size_t rows, size_t cols) : m_rows(rows), m_cols(cols), m_data(std::make_unique<std::vector<T>>(rows * cols)) {}
-    Matrix(const Matrix& other) : m_rows(other.m_rows), m_cols(other.m_cols), m_data(std::make_unique<std::vector<T>>(*other.m_data)) {}
-    Matrix(Matrix&& other) : m_rows(other.m_rows), m_cols(other.m_cols), m_data(std::move(other.m_data)) {}
 
-    Matrix& operator=(const Matrix& other)
-    {
-        if (&other == this) return *this;
-        m_rows = other.m_rows;
-        m_cols = other.m_cols;
-        m_data = std::make_unique<std::vector<T>>(*other.m_data);
+public:
+    Matrix() : m_rows(0), m_cols(0), m_data(nullptr) {}
+
+    Matrix(size_t rows, size_t cols) : m_rows(rows), m_cols(cols) {
+        m_data = std::unique_ptr<std::vector<T>>(new std::vector<T>(rows * cols));
+    }
+
+    Matrix(const Matrix& other) : m_rows(other.m_rows), m_cols(other.m_cols) {
+        m_data = std::unique_ptr<std::vector<T>>(new std::vector<T>(*other.m_data));
+    }
+
+    Matrix(Matrix&& other) : m_rows(other.m_rows), m_cols(other.m_cols) {
+        m_data = std::move(other.m_data);
+    }
+
+    Matrix& operator=(const Matrix& other) {
+        if (this != &other) {
+            m_rows = other.m_rows;
+            m_cols = other.m_cols;
+            m_data = std::unique_ptr<std::vector<T>>(new std::vector<T>(*other.m_data));
+        }
+
         return *this;
     }
 
-    Matrix& operator=(Matrix&& other)
-    {
-        if (&other == this) return *this;
-        m_rows = other.m_rows;
-        m_cols = other.m_cols;
-        m_data = std::move(other.m_data);
+    Matrix& operator=(Matrix&& other) {
+        if (this != &other) {
+            m_rows = other.m_rows;
+            m_cols = other.m_cols;
+            m_data = std::move(other.m_data);
+        }
+
         return *this;
     }
 
