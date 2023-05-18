@@ -76,13 +76,14 @@ Matrix<T, m_rows, m_cols> operator-(const Matrix<T, m_rows, m_cols> self, const 
     return result;
 }
 
-template<typename T, unsigned m_rows, unsigned m_cols, unsigned m_rows_other, unsigned m_cols_other>
-Matrix<T, m_rows, m_cols_other> operator*(const Matrix<T, m_rows, m_cols> self, const Matrix<T, m_rows_other, m_cols_other>& other)
+
+template<typename T, unsigned L, unsigned M, unsigned R>
+Matrix<T, L, R> operator*(const Matrix<T, L, M> self, const Matrix<T, M, R>& other)
 {
-    Matrix<T, m_rows, m_cols_other> result;
-    for (size_t i = 0; i < m_rows; ++i)
-        for (size_t j = 0; j < m_cols_other; ++j)
-            for (size_t k = 0; k < m_cols; ++k)
+    Matrix<T, L, R> result;
+    for (size_t i = 0; i < L; ++i)
+        for (size_t j = 0; j < R; ++j)
+            for (size_t k = 0; k < M; ++k)
                 result(i, j) += self(i, k) * other(k, j);
     return result;
 }
